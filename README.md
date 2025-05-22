@@ -52,9 +52,15 @@ train_ds, val_ds, test_ds = split["train"], split["test"], ds["test"]
 Loss function:
 
 $$
-\mathcal{L} 
-= \alpha\,\mathrm{CE}(y, s)
-+ (1 - \alpha)\,T^2\,\mathrm{KL}\bigl(\mathrm{softmax}(t/T)\,\|\,\mathrm{softmax}(s/T)\bigr)
+\begin{aligned}
+\mathcal{L}(\theta_s)
+&= \alpha\,\mathrm{CE}(y, s) \\
+&\quad + (1 - \alpha)\,T^2\,\mathrm{KL}\!\Bigl(
+    \mathrm{softmax}\bigl(\tfrac{t}{T}\bigr)
+    \,\big\|\,
+    \mathrm{softmax}\bigl(\tfrac{s}{T}\bigr)
+  \Bigr).
+\end{aligned}
 $$
 
 * **α = 0.5**, **T = 2.0**
