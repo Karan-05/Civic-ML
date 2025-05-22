@@ -68,7 +68,7 @@ $$
 
 ### 1.4 Evaluation & analysis
 
-* **Accuracy / F1** via 🤗 `evaluate`
+* **Accuracy / F1** via `evaluate`
 * **Latency & throughput** with a simple timing loop on GPU/CPU
 * **Parameter & disk size** via `model.numel()` + folder size
 * Optional: probability **calibration curves** (`sklearn.calibration_curve`)
@@ -94,5 +94,37 @@ $$
 | Hyper‑param sweeps (α, T) in W\&B    | Find best calibration vs. accuracy.   |
 
 ---
+
+## 5 Hyper-Parameter Choices & Future Tweaks
+
+| Component | Hyper-parameter | Value used | Why this default? | What to try next |
+|-----------|-----------------|------------|-------------------|------------------|
+| **Teacher** | Epochs | **1** | Meets assignment’s “≤ 1 epoch” guideline yet reaches > 93 % accuracy. | 2–3 epochs with early-stop for a slightly stronger teacher. |
+| | Learning rate | 2 e-5 | Stable default for BERT fine-tuning. | LR-finder or 3e-5 with cosine decay. |
+| | Batch size | 16 | Fits comfortably in 12 GB GPU RAM. | 32 with gradient accumulation for faster convergence. |
+| **Student / KD** | α (hard-vs-soft) | **0.5** | Equal weight keeps both loss terms balanced out-of-the-box. | Grid-search 0.3–0.7: lower α often improves calibration. |
+| | Temperature **T** | **2.0** | Classic distillation value; smooths logits without over-flattening. | 1 (softer) or 4 (sharper) to trade off calibration vs. accuracy. |
+| | Epochs | **1** | Honors the 60-min budget; already yields 92 %+. | 2–3 epochs can close the residual accuracy gap. |
+
+### Why no extensive hyper-parameter tuning?
+The assignment emphasized **clarity over squeezing every last 0.2 pp**.  
+All defaults are robust, reproduce on CPU, and converge within the time budget.
+
+---
+
+## 6 Data Augmentation Ideas
+
+Although no augmentation was required (and none is used in this baseline), here are **three low-cost techniques** that could boost robustness and further close the teacher-student gap:
+
+| Technique | Implementation sketch | Expected upside |
+|-----------|----------------------|-----------------|
+| **Synonym Swap** | Swap 1–2 random non-stopwords per review using WordNet synonyms (`nlpaug`, `wordnet`). | Adds lexical diversity; cheap CPU-only. |
+| **Back-translation** | Translate EN → FR → EN using a lightweight OPUS-MT model. | Paraphrases sentences without altering sentiment; proven to lift IMDb accuracy 0.4–0.8 pp. |
+| **MixUp logits** | Linearly mix two training examples’ embeddings & labels (`λ x_i + (1−λ) x_j`). | Regularises the student and can improve calibration. |
+
+> **Note:** Any augmentation should be applied **only** to the student’s training batches (teacher remains fixed). This often improves KD because the student sees slightly different views of the input while still matching teacher behaviour.
+
+Feel free to experiment—these can be tacked on with minimal code and, if combined with 2–3 epoch KD, may push the student beyond 93 % accuracy while maintaining its speed advantage.
+
 ```
 ```
