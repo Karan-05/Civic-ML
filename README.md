@@ -16,7 +16,7 @@ The student keeps ~99 % of the teacher’s F1 while being roughly 2× faster a
 
 ---
 
-## 🔧 Motivation & Choices
+## Motivation & Choices
 
 | Component               | Why this choice?                                                                                                                                           |
 |-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
