@@ -1,5 +1,4 @@
-```markdown
-# Civic's IMDb Sentiment Classification with Knowledge Distillation
+### Civic's IMDb Sentiment Classification with Knowledge Distillation
 
 Two epochs of total training, one GPU‑hour, state‑of‑the‑art accuracy:
 
